@@ -1,0 +1,42 @@
+.MMM-eshopspecials {
+  text-align: center;
+  max-width: 320px;
+  font-family: inherit;
+}
+
+.MMM-eshopspecials .eshop-image-wrapper {
+  margin: 8px auto;
+  text-align: center;
+}
+
+.MMM-eshopspecials .eshop-image {
+  max-width: 300px;
+  max-height: 220px;
+  width: auto;
+  height: auto;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.1);
+  object-fit: contain;
+  background: rgba(255,255,255,0.05);
+}
+
+.MMM-eshopspecials .eshop-title {
+  font-size: 0.85em;
+  font-weight: normal;
+  line-height: 1.3;
+}
+
+.MMM-eshopspecials .eshop-price {
+  font-size: 1.4em;
+  font-weight: bold;
+  color: #e86500;
+  margin: 6px 0;
+}
+
+.MMM-eshopspecials .eshop-description {
+  font-size: 0.75em;
+  color: #aaa;
+  line-height: 1.4;
+  margin-top: 6px;
+  padding: 0 4px;
+}
