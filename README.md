@@ -9,6 +9,12 @@ A [MagicMirror²](https://github.com/MagicMirrorOrg/MagicMirror) module that dis
 - Price (highlighted in orange)
 - Short description
 
+## Screenshot
+
+<img width="423" height="527" alt="Screenshot 2026-06-03 002414" src="https://github.com/user-attachments/assets/8e50ea05-062d-4a89-836b-385cd9fb0420" />
+
+Displaying product image ( `showImage` ) AND price ( `showPrice` ) AND description ( `showDescription` ).
+
 ## How it works
 
 The module fetches the deal **once on startup**, then automatically refreshes every day at **12:00 Athens time (Europe/Athens)** — exactly when the new daily deal goes live on eshopspecials.gr. This works correctly regardless of the timezone configured in MagicMirror or the host system, because the schedule is calculated against the Athens timezone internally using the Node.js `Intl` API.
@@ -67,6 +73,10 @@ Add the following block to your `config/config.js`:
 | `showDescription` | `true` | Whether to show the description |
 | `maxDescriptionLength` | `150` | Max characters for the description |
 | `imageMaxWidth` | `"300px"` | Max CSS width for the image |
+
+## Acknowledgments
+
+With the power of AI Coding.
 
 ## License
 
