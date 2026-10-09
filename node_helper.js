@@ -17,48 +17,23 @@ module.exports = NodeHelper.create({
     }
   },
 
-  // Returns milliseconds until the next 12:00:00 Europe/Athens time.
-  msUntilNoonAthens: function () {
-    const tz = "Europe/Athens";
-    const now = new Date();
-
-    // Build a Date that represents today at 12:00:00 Athens time.
-    // We use Intl.DateTimeFormat to find out what "today" looks like in Athens,
-    // then construct the target timestamp via a UTC-offset trick.
+  // Returns the current hour, minute and full date string in Europe/Athens
+  athensTime: function () {
     const fmt = new Intl.DateTimeFormat("en-GB", {
-      timeZone: tz,
+      timeZone: "Europe/Athens",
       year: "numeric", month: "2-digit", day: "2-digit",
-      hour: "2-digit", minute: "2-digit", second: "2-digit",
+      hour: "2-digit", minute: "2-digit",
       hour12: false
     });
-
-    const parts = fmt.formatToParts(now);
+    const parts = fmt.formatToParts(new Date());
     const get = (type) => parseInt(parts.find(p => p.type === type).value, 10);
-
-    // Current Athens wall-clock time
-    const athensHour   = get("hour");
-    const athensMinute = get("minute");
-    const athensSecond = get("second");
-    const athensDay    = get("day");
-    const athensMonth  = get("month");
-    const athensYear   = get("year");
-
-    // Seconds elapsed today in Athens
-    const secondsToday = athensHour * 3600 + athensMinute * 60 + athensSecond;
-    const noonSeconds  = 12 * 3600; // 12:00:00
-
-    let msUntilNoon;
-    if (secondsToday < noonSeconds) {
-      // Noon hasn't happened yet today
-      msUntilNoon = (noonSeconds - secondsToday) * 1000;
-    } else {
-      // Noon already passed today — wait until noon tomorrow
-      msUntilNoon = (86400 - secondsToday + noonSeconds) * 1000;
-    }
-
-    const nextNoon = new Date(now.getTime() + msUntilNoon);
-    console.log("MMM-eshopspecials: next fetch scheduled at " + nextNoon.toISOString() + " (12:00 Athens)");
-    return msUntilNoon;
+    const pad = (n) => String(n).padStart(2, "0");
+    const year  = get("year");
+    const month = get("month");
+    const day   = get("day");
+    // Full date string e.g. "2026-09-08" — unique per calendar day, never repeats
+    const dateStr = year + "-" + pad(month) + "-" + pad(day);
+    return { hour: get("hour"), minute: get("minute"), dateStr: dateStr };
   },
 
   scheduleDailyFetch: function () {
@@ -66,14 +41,18 @@ module.exports = NodeHelper.create({
 
     // Fetch immediately on startup to show today's deal right away
     this.fetchPage();
+    this.lastFetchedDate = null;
 
-    // Then schedule the first noon fetch
-    const msToNoon = this.msUntilNoonAthens();
-    setTimeout(function noonTick() {
-      self.fetchPage();
-      // After the first noon fetch, repeat every 24 hours exactly
-      setInterval(() => self.fetchPage(), 24 * 60 * 60 * 1000);
-    }, msToNoon);
+    // Check every minute whether it is 12:00 Athens time.
+    // This approach is immune to long-timeout drift and system sleep/wake cycles.
+    setInterval(function () {
+      const t = self.athensTime();
+      if (t.hour === 12 && t.minute === 5 && t.dateStr !== self.lastFetchedDate) {
+        console.log("MMM-eshopspecials: it is 12:05 Athens time (" + t.dateStr + ") — fetching new deal.");
+        self.lastFetchedDate = t.dateStr;
+        self.fetchPage();
+      }
+    }, 60 * 1000);
   },
 
   socketNotificationReceived: function (notification, payload) {
