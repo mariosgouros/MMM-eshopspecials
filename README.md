@@ -30,7 +30,7 @@ In your terminal, go to your MagicMirror's module directory:
 
 ```bash
 cd ~/MagicMirror/modules
-git clone https://github.com/mariossgouros/MMM-eshopspecials
+git clone https://github.com/mariosgouros/MMM-eshopspecials
 npm install
 ```
 
